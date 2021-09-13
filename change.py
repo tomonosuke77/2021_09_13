@@ -58,5 +58,5 @@ jobs:
           python main.py
 
 """
-with open("main.yml", "w") as yf:
+with open("/.github/workflows/main.yml", "w") as yf:
     yf.write(s)
