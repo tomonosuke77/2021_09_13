@@ -37,5 +37,5 @@ jobs:
           pip install oauth2client
       - name: Run script
         run: |
-          # main.pyの実行
+          # change.pyの実行
           python change.py
