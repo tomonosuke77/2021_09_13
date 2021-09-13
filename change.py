@@ -3,9 +3,7 @@ import pandas as pd
 from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-import time
-import datetime
-import schedule
+
 
 def auth():
     SP_CREDENTIAL_FILE = 'secret.json'
