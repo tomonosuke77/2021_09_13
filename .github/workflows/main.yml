@@ -1,5 +1,5 @@
 # ワークフロー名
-name: hatbot
+name: chathatbot
 
 # 発火タイミング
 # 日本時刻の朝7時に定期処理(分 時 日 月 曜日)
@@ -9,7 +9,7 @@ name: hatbot
 on:
   push:
   #schedule:
-    #- cron: '0 22 * * *'
+    #- cron: r'0 22 * * *'
 
 jobs:
   build:
