@@ -30,7 +30,7 @@ jobs:
           python -m pip install --upgrade pip
           # 必要なパッケージインストール
           pip install line-bot-sdk
-          pip install Pyyalm
+          pip install pyyaml
           pip install pandas
           pip install datetime
           pip install gspread
