@@ -9,7 +9,7 @@ name: chat_hatbot
 on:
   push:
   schedule:
-    - cron: '50 02 * * *'
+    - cron: '50 2 * * *'
 
 jobs:
   build:
