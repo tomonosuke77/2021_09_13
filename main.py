@@ -2,7 +2,7 @@ import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import datetime
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
 import schedule
 import time
 import json
@@ -37,38 +37,47 @@ def dinf():
     today = timestamp.strftime("%Y/%m/%d")
     d = df.iat[0,3]
     t = df.iat[0,2]
-    return [today,d,t]
+    s = df.iat[0,4]
+    return [today,d,t,s]
 
 def main(a,b):
     USER_ID = info['USER_ID']
-    [td, d,t]=dinf()
+    [td, d, t, s] = dinf()
     JST = timezone(timedelta(hours=+9), 'JST')
     timestamp = datetime.now(JST)
     H = int(timestamp.strftime("%H"))
     M = int(timestamp.strftime("%M"))
+    y=s[0:4]
+    m=s[5:7]
+    d=s[8:10]
+    sdt=y + '/' + m + '/' + d
+    dt=datetime.strptime(sdt,'%Y/%m/%d')
+    tdt=datetime.strptime(td,'%Y/%m/%d')
+    dd=tdt-dt
+    sa='前回の生理から'+str(dd.days+1)+'日目。今日も忘れずにピルを飲みましょう。'
     while True:
         if d != td:
             if H == a and M == b:
-                messages = TextSendMessage(text = "前回の生理から　日目。今日も忘れずにピルを飲みましょう。")
-                line_bot_api.push_message(USER_ID, messages = messages)
+                messages = TextSendMessage(text = sa)
+                line_bot_api.broadcast(messages = messages)
                 time.sleep(60)
-                [td, d,t]=dinf()
+                [td, d, t, s] = dinf()
                 JST = timezone(timedelta(hours=+9), 'JST')
                 timestamp = datetime.now(JST)
                 H = int(timestamp.strftime("%H"))
                 M = int(timestamp.strftime("%M")) 
             elif H > a and M == b:
                 messages = TextSendMessage(text = "リマインドです。今日も忘れずにピルを飲みましょう。")
-                line_bot_api.push_message(USER_ID, messages = messages)
+                line_bot_api.broadcast(messages = messages)
                 time.sleep(60)
-                [td, d,t]=dinf()
+                [td, d, t, s] = dinf()
                 JST = timezone(timedelta(hours=+9), 'JST')
                 timestamp = datetime.now(JST)
                 H = int(timestamp.strftime("%H"))
                 M = int(timestamp.strftime("%M"))
             else:
                 time.sleep(60)
-                [td, d,t]=dinf()
+                [td, d, t, s] = dinf()
                 JST = timezone(timedelta(hours=+9), 'JST')
                 timestamp = datetime.now(JST)
                 H = int(timestamp.strftime("%H"))
@@ -77,7 +86,7 @@ def main(a,b):
             break
 
 
-[td,d,t]=dinf()
+[td, d, t, s] = dinf()
 a = int(t[0:2])
 b = int(t[3:5])
 
