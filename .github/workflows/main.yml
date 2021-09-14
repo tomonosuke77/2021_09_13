@@ -9,7 +9,7 @@ name: chathatbot
 on:
   push:
   #schedule:
-    #- cron: r'0 22 * * *'
+    #- cron: '0 22 * * *'
 
 jobs:
   build:
@@ -30,6 +30,10 @@ jobs:
           python -m pip install --upgrade pip
           # 必要なパッケージインストール
           pip install line-bot-sdk
+          pip install pandas
+          pip install datetime
+          pip install gspread
+          pip install oauth2client
       - name: Run script
         run: |
           # main.pyの実行
