@@ -10,9 +10,8 @@ on:
   push:
   schedule:
     - cron: '0 22 * * *'
-    - cron: '40 2 * * *'
-    - cron: '20 6 * * *'
-    - cron: '00 10 * * *'
+    - cron: '0 4 * * *'
+    - cron: '0 10 * * *'
 
 jobs:
   build:
