@@ -83,7 +83,7 @@ def main(a,b):
                 H = int(timestamp.strftime("%H"))
                 M = int(timestamp.strftime("%M")) 
             elif H > a and M == b:
-                messages = TextSendMessage(text = "リマインドです。今日も忘れずにピルを飲みましょう。/nこの通知を止める場合は「飲んだ」と送信してください。")
+                messages = TextSendMessage(text = "リマインドです。今日も忘れずにピルを飲みましょう。\nこの通知を止める場合は「飲んだ」と送信してください。")
                 line_bot_api.broadcast(messages = messages)
                 time.sleep(60)
                 [td, d, t, s, p] = dinf()
