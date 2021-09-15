@@ -38,55 +38,76 @@ def dinf():
     d = df.iat[0,3]
     t = df.iat[0,2]
     s = df.iat[0,4]
-    return [today,d,t,s]
+    p = df.iat[0,0]
+    return [today,d,t,s,p]
 
 def main(a,b):
     USER_ID = info['USER_ID']
-    [td, d, t, s] = dinf()
+    [td, d, t, s, p] = dinf()
     JST = timezone(timedelta(hours=+9), 'JST')
     timestamp = datetime.now(JST)
     H = int(timestamp.strftime("%H"))
     M = int(timestamp.strftime("%M"))
-    y=s[0:4]
-    m=s[5:7]
-    d=s[8:10]
-    sdt=y + '/' + m + '/' + d
-    dt=datetime.strptime(sdt,'%Y/%m/%d')
-    tdt=datetime.strptime(td,'%Y/%m/%d')
-    dd=tdt-dt
-    sa='前回の生理から'+str(dd.days+1)+'日目。今日も忘れずにピルを飲みましょう。'
+    ys = s[0:4]
+    ms = s[5:7]
+    ds = s[8:10]
+    yp = p[0:4]
+    mp = p[5:7]
+    dp = p[8:10]
+    sdt = ys + '/' + ms + '/' + ds
+    pdt = yp + '/' + mp + '/' + dp
+    dts = datetime.strptime(sdt,'%Y/%m/%d')
+    dtp = datetime.strptime(pdt,'%Y/%m/%d')
+    tdt = datetime.strptime(td,'%Y/%m/%d')
+    dds = tdt - dts
+    ddp = tdt - dtp
+    mdp = ddp.days % 28 + 1
+    if mdp == 22:
+        sa = '前回の生理から'+str(dds.days+1)+'日目。今日から偽薬(休薬)期間です。28錠タイプの場合は気にせず今日も1錠飲みましょう。'
+    elif mdp == 0:
+        sa = '前回の生理から'+str(dds.days+1)+'日目。今日で偽薬(休薬)期間が終了します。28錠タイプの場合は気にせず今日も1錠飲みましょう。'
+    elif mdp >= 23 and ddp <=27:
+        sa = '前回の生理から'+str(dds.days+1)+'日目、今日で偽薬(休薬)期間'+str(mdp-21)+'日目です。28錠タイプの場合は気にせず今日も1錠飲みましょう。'
+    else:
+        sa='前回の生理から'+str(dds.days+1)+'日目。今日も忘れずにピルを飲みましょう。'
+    sb='前回の生理から'+str(dds.days+1)+'日目です。'
     while True:
         if d != td:
             if H == a and M == b:
                 messages = TextSendMessage(text = sa)
                 line_bot_api.broadcast(messages = messages)
                 time.sleep(60)
-                [td, d, t, s] = dinf()
+                [td, d, t, s, p] = dinf()
                 JST = timezone(timedelta(hours=+9), 'JST')
                 timestamp = datetime.now(JST)
                 H = int(timestamp.strftime("%H"))
                 M = int(timestamp.strftime("%M")) 
             elif H > a and M == b:
-                messages = TextSendMessage(text = "リマインドです。今日も忘れずにピルを飲みましょう。")
+                messages = TextSendMessage(text = "リマインドです。今日も忘れずにピルを飲みましょう。/nこの通知を止める場合は「飲んだ」と送信してください。")
                 line_bot_api.broadcast(messages = messages)
                 time.sleep(60)
-                [td, d, t, s] = dinf()
+                [td, d, t, s, p] = dinf()
                 JST = timezone(timedelta(hours=+9), 'JST')
                 timestamp = datetime.now(JST)
                 H = int(timestamp.strftime("%H"))
                 M = int(timestamp.strftime("%M"))
             else:
                 time.sleep(60)
-                [td, d, t, s] = dinf()
+                [td, d, t, s, p] = dinf()
                 JST = timezone(timedelta(hours=+9), 'JST')
                 timestamp = datetime.now(JST)
                 H = int(timestamp.strftime("%H"))
                 M = int(timestamp.strftime("%M"))
         else:
-            break
+            if H == a and M == b:
+                messages = TextSendMessage(text = sb)
+                line_bot_api.broadcast(messages = messages)
+                break
+            else:
+                break
 
 
-[td, d, t, s] = dinf()
+[td, d, t, s, p] = dinf()
 a = int(t[0:2])
 b = int(t[3:5])
 
