@@ -35,10 +35,10 @@ def dinf():
     JST = timezone(timedelta(hours=+9), 'JST')
     timestamp = datetime.now(JST)
     today = timestamp.strftime("%Y/%m/%d")
-    d = df.iat[0,3]
-    t = df.iat[0,2]
-    s = df.iat[0,4]
-    p = df.iat[0,0]
+    d = df.iat[0,3] #最終確認日
+    t = df.iat[0,2] #通知時刻
+    s = df.iat[0,4] #生理初日
+    p = df.iat[0,0] #ピル初日
     return [today,d,t,s,p]
 
 def main(a,b):
@@ -62,6 +62,7 @@ def main(a,b):
     dds = tdt - dts
     ddp = tdt - dtp
     mdp = ddp.days % 28 + 1
+    sb = '前回の生理から'+str(dds.days+1)+'日目です。'
     if mdp == 22:
         sa = '前回の生理から'+str(dds.days+1)+'日目。今日から偽薬(休薬)期間です。28錠タイプの場合は気にせず今日も1錠飲みましょう。'
     elif mdp == 28:
@@ -70,7 +71,6 @@ def main(a,b):
         sa = '前回の生理から'+str(dds.days+1)+'日目、今日で偽薬(休薬)期間'+str(mdp-21)+'日目です。28錠タイプの場合は気にせず今日も1錠飲みましょう。'
     else:
         sa='前回の生理から'+str(dds.days+1)+'日目。今日も忘れずにピルを飲みましょう。'
-    sb='前回の生理から'+str(dds.days+1)+'日目です。'
     while True:
         if d != td:
             if H == a and M == b:
@@ -99,10 +99,18 @@ def main(a,b):
                 H = int(timestamp.strftime("%H"))
                 M = int(timestamp.strftime("%M"))
         else:
-            if H == a and M == b:
-                messages = TextSendMessage(text = sb)
-                line_bot_api.broadcast(messages = messages)
-                break
+            if H <= a:
+                if H == a and M ==b:
+                    messages = TextSendMessage(text = sb)
+                    line_bot_api.broadcast(messages = messages)
+                    break
+                else:
+                    time.sleep(60)
+                    [td, d, t, s, p] = dinf()
+                    JST = timezone(timedelta(hours=+9), 'JST')
+                    timestamp = datetime.now(JST)
+                    H = int(timestamp.strftime("%H"))
+                    M = int(timestamp.strftime("%M")) 
             else:
                 break
 
