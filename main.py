@@ -70,7 +70,11 @@ def main(a,b):
     elif mdp >= 23 and mdp <=27:
         sa = '前回の生理から'+str(dds.days+1)+'日目、今日で偽薬(休薬)期間'+str(mdp-21)+'日目です。28錠タイプの場合は気にせず今日も1錠飲みましょう。'
     else:
-        sa='前回の生理から'+str(dds.days+1)+'日目。今日も忘れずにピルを飲みましょう。'
+        sa='前回の生理から'+str(dds.days+1)+'日目。今日も忘れずにピルを飲みましょう。
+    br = (60 - b - 1) // 15
+    bri = 0
+    bs = b // 15
+    bsi = bs
     while True:
         if d != td:
             if H == a and M == b:
@@ -82,9 +86,39 @@ def main(a,b):
                 timestamp = datetime.now(JST)
                 H = int(timestamp.strftime("%H"))
                 M = int(timestamp.strftime("%M")) 
-            elif H > a and M == b:
+            elif H == a and M == b + 15 * (bri + 1):
                 messages = TextSendMessage(text = "リマインドです。今日も忘れずにピルを飲みましょう。\nこの通知を止める場合は「飲んだ」と送信してください。")
                 line_bot_api.broadcast(messages = messages)
+                if bri < br - 1:
+                    bri = bri + 1
+                else:
+                    bri = 0
+                time.sleep(60)
+                [td, d, t, s, p] = dinf()
+                JST = timezone(timedelta(hours=+9), 'JST')
+                timestamp = datetime.now(JST)
+                H = int(timestamp.strftime("%H"))
+                M = int(timestamp.strftime("%M"))
+            elif H > a and M == b + 15 * bri:
+                messages = TextSendMessage(text = "リマインドです。今日も忘れずにピルを飲みましょう。\nこの通知を止める場合は「飲んだ」と送信してください。")
+                line_bot_api.broadcast(messages = messages)
+                if bri < br:
+                    bri = bri + 1
+                else:
+                    bri = 0
+                time.sleep(60)
+                [td, d, t, s, p] = dinf()
+                JST = timezone(timedelta(hours=+9), 'JST')
+                timestamp = datetime.now(JST)
+                H = int(timestamp.strftime("%H"))
+                M = int(timestamp.strftime("%M"))
+            elif H > a and M == b - 15 * bsi:
+                messages = TextSendMessage(text = "リマインドです。今日も忘れずにピルを飲みましょう。\nこの通知を止める場合は「飲んだ」と送信してください。")
+                line_bot_api.broadcast(messages = messages)
+                if bsi > 0:
+                    bsi = bsi - 1
+                else:
+                    bsi = bs
                 time.sleep(60)
                 [td, d, t, s, p] = dinf()
                 JST = timezone(timedelta(hours=+9), 'JST')
